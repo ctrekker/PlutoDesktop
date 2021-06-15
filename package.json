@@ -1,0 +1,14 @@
+{
+  "name": "pluto-electron",
+  "version": "0.15.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Connor Burns",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^13.1.2"
+  }
+}

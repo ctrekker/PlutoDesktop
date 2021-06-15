@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>⚡ Pluto.jl ⚡</title>
+        <link rel="stylesheet" type="text/css" href="juliamono.css"/>
+        <link rel="stylesheet" type="text/css" href="index.css"/>
+    </head>
+    <body>
+        <img id="favicon" src="favicon.png" style="opacity: 0"/>
+        <div>
+            <div id="installation-info" class="light" style="opacity: 0; display: none">
+                <h1>Installing Pluto.jl</h1>
+                <h3>This will take several minutes</h3>
+            </div>
+            <div id="installation-terminal-container" class="light" style="height: 0; opacity: 0">
+                <pre id="installation-terminal">
+    
+                </pre>
+            </div>
+        </div>
+        <script>
+            const startTime = Date.now();
+            setTimeout(() => {
+                document.getElementById('favicon').style.opacity = '1';
+            }, 500);
+
+            const installationTerminal = document.getElementById('installation-terminal');
+            const installationTerminalContainer = document.getElementById('installation-terminal-container');
+            const installationInfo = document.getElementById('installation-info');
+            
+            let installationText = '';
+            const updateInstallationText = () => {
+                installationTerminal.innerText = installationText;
+                installationTerminalContainer.style.height = '';
+                installationTerminalContainer.style.opacity = '';
+                installationInfo.style.display = '';
+                installationInfo.style.opacity = '1';
+                installationTerminal.scrollTo(installationTerminal.scrollLeft, installationTerminal.scrollHeight);
+            };
+
+            window.api.receive('installation-updates', (data) => {
+                installationText += data;
+                if(Date.now() - startTime > 2500) {
+                    updateInstallationText();
+                }
+                else {
+                    setTimeout(updateInstallationText, 2500 - Date.now() + startTime);
+                }
+            });
+        </script>
+    </body>
+</html>
