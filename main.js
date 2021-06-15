@@ -1,10 +1,13 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { spawn } = require('child_process');
+const isDev = require('electron-is-dev');
 const fs = require('fs');
 const stream = require('stream');
 const path = require('path');
 
 const TITLE = '⚡ Pluto.jl ⚡';
+const basePath = path.resolve(__dirname, isDev ? '.' : '../..');
+
 
 function init() {
     app.whenReady().then(() => {
@@ -15,7 +18,7 @@ function init() {
 function createWindow() {
     const win = new BrowserWindow({
         width: 800,
-        height: 600,
+        height: 620,
         title: TITLE,
         icon: __dirname + '/src/favicon.png',
         frame: false,
@@ -28,10 +31,13 @@ function createWindow() {
         }
     });
     win.setMenuBarVisibility(false);
+    win.setAlwaysOnTop(true, 'screen');
+
     // win.webContents.openDevTools()
     win.loadFile('src/index.html').then(() => {
         if(!fs.existsSync('installation')) {
             fs.mkdirSync('installation');
+            win.setAlwaysOnTop(true, 'screen');
             const installStream = install(() => {
                 runPluto(win);
             });
@@ -46,7 +52,7 @@ function createWindow() {
 
 function runPluto(win) {
     const plutoServer = spawn('julia', ['--project=.', '-e', 'import Pluto; Pluto.run(; launch_browser=false)'], {
-        cwd: __dirname + '/installation/PlutoRunner'
+        cwd: path.join(basePath, '/installation/PlutoRunner')
     });
     let secret = null;
     plutoServer.stdout.on('data', (data) => {
@@ -90,18 +96,19 @@ function install(callback=()=>{}) {
     installationStream._read = () => {};
 
     const writeToInstallationStream = writeToStream(installationStream);
-    if(!fs.existsSync('installation/Pluto.jl')) {
+    if(!fs.existsSync(path.join(basePath, 'installation/Pluto.jl'))) {
         installing = true;
         const plutoInstall = spawn('git', ['clone', 'https://github.com/fonsp/Pluto.jl'], {
-            cwd: __dirname + '/installation'
+            cwd: path.join(basePath, 'installation')
         });
         plutoInstall.stdout.on('data', writeToInstallationStream);
         plutoInstall.stderr.on('data', writeToInstallationStream);
         plutoInstall.on('close', () => {
-            if(!fs.existsSync('installation/PlutoRunner')) {
-                fs.mkdirSync('installation/PlutoRunner');
-                const runnerInstall = spawn('julia', ['../../init_runner.jl'], {
-                    cwd: __dirname + '/installation/PlutoRunner'
+            const runnerPath = path.join(basePath, 'installation/PlutoRunner');
+            if(!fs.existsSync(runnerPath)) {
+                fs.mkdirSync(runnerPath);
+                const runnerInstall = spawn('julia', ['-e', 'import Pkg; Pkg.add(; path="../Pluto.jl")'], {
+                    cwd: path.join(basePath, '/installation/PlutoRunner')
                 });
                 runnerInstall.stdout.on('data', writeToInstallationStream);
                 runnerInstall.stderr.on('data', writeToInstallationStream);

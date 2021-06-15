@@ -1,7 +1,7 @@
 {
   "name": "pluto-electron",
   "version": "0.15.0",
-  "description": "",
+  "description": "🎈 Simple reactive notebooks for Julia",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
@@ -10,5 +10,16 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^13.1.2"
+  },
+  "build": {
+    "appId": "org.plutojl.electron",
+    "productName": "Pluto.jl Desktop",
+    "files": [
+      "!installation/*",
+      "!dist/*"
+    ]
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0"
   }
 }
