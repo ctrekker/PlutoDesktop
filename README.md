@@ -1,3 +1,6 @@
+| *IMPORTANT*: This project has been superseded by [JuliaPluto/PlutoDesktop](https://github.com/JuliaPluto/PlutoDesktop)! |
+| --- |
+
 # Pluto.jl Desktop
 Wraps [Pluto.jl](https://github.com/fonsp/Pluto.jl) in a Desktop application for those who dislike working through a browser.
 
